@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech-to-Text</title>
+    <style>
+        #transcription {
+            width: 80%;
+            height: 200px;
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <button id="recordButton">Start Recording</button>
+    <div id="transcription"></div>
+
+    <script>
+        const recordButton = document.getElementById('recordButton');
+        const transcriptionDiv = document.getElementById('transcription');
+
+        let recognition;
+
+        recordButton.addEventListener('click', () => {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert("Speech recognition is not supported by your browser.");
+                return;
+            }
+
+            if (!recognition) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+
+                recognition.onresult = (event) => {
+                    const result = event.results[event.results.length - 1];
+                    const transcript = result[0].transcript;
+                    transcriptionDiv.textContent += transcript;
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                };
+
+                recognition.onend = () => {
+                    recognition = null;
+                };
+            }
+
+            if (recognition && recognition.running) {
+                recordButton.textContent = 'Start Recording';
+                recognition.stop();
+            } else {
+                recordButton.textContent = 'Stop Recording';
+                recognition.start();
+            }
+        });
+    </script>
+</body>
+</html>
