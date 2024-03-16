@@ -37,9 +37,21 @@
                 recognition.interimResults = true;
 
                 recognition.onresult = (event) => {
-                    const result = event.results[event.results.length - 1];
-                    const transcript = result[0].transcript;
-                    transcriptionDiv.textContent += transcript;
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const result = event.results[i];
+                        const transcript = result[0].transcript;
+
+                        if (result.isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    transcriptionDiv.innerHTML = interimTranscript + '<span style="color: blue;">' + finalTranscript + '</span>';
                 };
 
                 recognition.onerror = (event) => {
